@@ -29,12 +29,12 @@ Container_Boundary(api_gateway_boundary, "API Gateway") {
     Component(gateway_auth_middleware, "Auth Middleware", "Kotlin/JWT", "Проверка токенов, авторизация запросов")
     Component(gateway_rate_limiter, "Rate Limiter", "Kotlin", "Ограничение частоты запросов")
     Component(gateway_request_validator, "Request Validator", "Kotlin", "Валидация входящих данных")
-    Component(gateway_grpc_client, "gRPC Client Pool", "Kotlin", "Клиенты для взаимодействия с микросервисами")
+    Component(gateway_jRPC_client, "jRPC Client Pool", "Kotlin", "Клиенты для взаимодействия с микросервисами")
 }
 
 ' User Service
 Container_Boundary(user_service_boundary, "User Service") {
-    Component(user_grpc_server, "User gRPC API", "Kotlin", "Обработка gRPC запросов от API Gateway")
+    Component(user_jRPC_server, "User jRPC API", "Kotlin", "Обработка jRPC запросов от API Gateway")
     Component(user_auth_controller, "Auth Controller", "Kotlin", "Регистрация, вход, выход пользователей")
     Component(user_controller, "User Controller", "Kotlin", "CRUD операции с пользователями")
     Component(user_token_manager, "Token Manager", "Kotlin", "Генерация и валидация JWT токенов")
@@ -45,7 +45,7 @@ Container_Boundary(user_service_boundary, "User Service") {
 
 ' Device Service
 Container_Boundary(device_service_boundary, "Device Service") {
-    Component(device_grpc_api, "Device gRPC API", "Kotlin", "Обработка gRPC запросов по устройствам")
+    Component(device_jRPC_api, "Device jRPC API", "Kotlin", "Обработка jRPC запросов по устройствам")
     Component(device_registry, "Device Registry", "Kotlin", "Регистрация и каталогизация устройств")
     Component(device_catalog, "Device Catalog", "Kotlin", "Управление каталогом типов устройств партнёров")
     Component(device_config, "Device Config", "Kotlin", "Управление конфигурациями устройств")
@@ -54,7 +54,7 @@ Container_Boundary(device_service_boundary, "Device Service") {
 
 ' Telemetry Service
 Container_Boundary(telemetry_service_boundary, "Telemetry Service") {
-    Component(telemetry_grpc_api, "Telemetry gRPC API", "Kotlin", "Обработка gRPC запросов телеметрии")
+    Component(telemetry_jRPC_api, "Telemetry jRPC API", "Kotlin", "Обработка jRPC запросов телеметрии")
     Component(telemetry_collector, "Telemetry Collector", "Kotlin", "Сбор данных с устройств")
     Component(telemetry_data_parser, "Data Parser", "Kotlin", "Парсинг данных от разных типов устройств")
     Component(telemetry_data_aggregator, "Data Aggregator", "Kotlin", "Агрегация данных по времени")
@@ -65,7 +65,7 @@ Container_Boundary(telemetry_service_boundary, "Telemetry Service") {
 
 ' Control Service
 Container_Boundary(control_service_boundary, "Control Service") {
-    Component(control_grpc_api, "Control gRPC API", "Kotlin", "Обработка gRPC команд управления")
+    Component(control_jRPC_api, "Control jRPC API", "Kotlin", "Обработка jRPC команд управления")
     Component(control_command_validator, "Command Validator", "Kotlin", "Валидация команд")
     Component(control_heating_controller, "Heating Controller", "Kotlin", "Управление отоплением")
     Component(control_lighting_controller, "Lighting Controller", "Kotlin", "Управление освещением")
@@ -76,7 +76,7 @@ Container_Boundary(control_service_boundary, "Control Service") {
 
 ' Rule Engine
 Container_Boundary(rule_service_boundary, "Rule Engine") {
-    Component(rule_grpc_api, "Rule gRPC API", "Kotlin", "Обработка gRPC запросов управления правилами")
+    Component(rule_jRPC_api, "Rule jRPC API", "Kotlin", "Обработка jRPC запросов управления правилами")
     Component(rule_user_request_service, "User Request Service", "Kotlin", "Ручной запуск сценариев")
     Component(rule_executor, "Rule Executor", "Kotlin", "Выполнение правил")
     Component(rule_condition_evaluator, "Condition Evaluator", "Kotlin", "Оценка условий срабатывания")
@@ -104,20 +104,20 @@ Rel(api_client, gateway_router, "HTTP запросы", "HTTPS/JSON")
 Rel(gateway_router, gateway_auth_middleware, "Проверяет аутентификацию")
 Rel(gateway_auth_middleware, gateway_rate_limiter, "Проверяет лимиты")
 Rel(gateway_rate_limiter, gateway_request_validator, "Валидирует данные")
-Rel(gateway_request_validator, gateway_grpc_client, "Маршрутизирует к сервисам")
+Rel(gateway_request_validator, gateway_jRPC_client, "Маршрутизирует к сервисам")
 
 ' API Gateway -> Сервисы
-Rel(gateway_auth_middleware, user_grpc_server, "Проверяет токены", "gRPC")
-Rel(gateway_grpc_client, user_grpc_server, "Запросы пользователей", "gRPC")
-Rel(gateway_grpc_client, device_grpc_api, "Запросы устройств", "gRPC")
-Rel(gateway_grpc_client, telemetry_grpc_api, "Запросы телеметрии", "gRPC")
-Rel(gateway_grpc_client, control_grpc_api, "Команды управления", "gRPC")
-Rel(gateway_grpc_client, rule_grpc_api, "Управление правилами", "gRPC")
-Rel(gateway_grpc_client, rule_user_request_service, "Запрос выполнения сценария", "gRPC")
+Rel(gateway_auth_middleware, user_jRPC_server, "Проверяет токены", "jRPC")
+Rel(gateway_jRPC_client, user_jRPC_server, "Запросы пользователей", "jRPC")
+Rel(gateway_jRPC_client, device_jRPC_api, "Запросы устройств", "jRPC")
+Rel(gateway_jRPC_client, telemetry_jRPC_api, "Запросы телеметрии", "jRPC")
+Rel(gateway_jRPC_client, control_jRPC_api, "Команды управления", "jRPC")
+Rel(gateway_jRPC_client, rule_jRPC_api, "Управление правилами", "jRPC")
+Rel(gateway_jRPC_client, rule_user_request_service, "Запрос выполнения сценария", "jRPC")
 
 ' User Service внутренние связи
-Rel(user_grpc_server, user_auth_controller, "Обрабатывает auth запросы")
-Rel(user_grpc_server, user_controller, "Обрабатывает user запросы")
+Rel(user_jRPC_server, user_auth_controller, "Обрабатывает auth запросы")
+Rel(user_jRPC_server, user_controller, "Обрабатывает user запросы")
 Rel(user_auth_controller, user_token_manager, "Генерирует токены")
 Rel(user_auth_controller, user_password_hasher, "Проверяет пароли")
 Rel(user_auth_controller, user_repository, "Создает/обновляет пользователей")
@@ -127,9 +127,9 @@ Rel(user_token_manager, user_repository, "Валидирует токены")
 Rel(user_repository, postgres_db, "SQL запросы", "TCP/SQL")
 
 ' Device Service внутренние связи
-Rel(device_grpc_api, device_registry, "Регистрация нового устройства")
-Rel(device_grpc_api, device_catalog, "Получение списка устройств")
-Rel(device_grpc_api, device_config, "Настройка параметров")
+Rel(device_jRPC_api, device_registry, "Регистрация нового устройства")
+Rel(device_jRPC_api, device_catalog, "Получение списка устройств")
+Rel(device_jRPC_api, device_config, "Настройка параметров")
 Rel(device_registry, device_repository, "Сохранение устройства")
 Rel(device_catalog, device_repository, "Чтение каталога")
 Rel(device_config, device_repository, "Сохранение конфига")
@@ -141,12 +141,12 @@ Rel(telemetry_collector, telemetry_data_parser, "Сырые данные")
 Rel(telemetry_data_parser, telemetry_data_validator, "Распарсенные данные")
 Rel(telemetry_data_validator, telemetry_alert_detector, "Проверенные данные")
 Rel(telemetry_data_validator, telemetry_repository, "Сохранение данных")
-Rel(telemetry_grpc_api, telemetry_data_aggregator, "Запрос агрегированных данных")
+Rel(telemetry_jRPC_api, telemetry_data_aggregator, "Запрос агрегированных данных")
 Rel(telemetry_data_aggregator, telemetry_repository, "Чтение данных")
 Rel(telemetry_repository, timescale_db, "SQL запросы", "TCP/SQL")
 
 ' Control Service внутренние связи
-Rel(control_grpc_api, control_command_validator, "Валидация команды")
+Rel(control_jRPC_api, control_command_validator, "Валидация команды")
 Rel(control_command_validator, control_heating_controller, "Команда отопления")
 Rel(control_command_validator, control_lighting_controller, "Команда освещения")
 Rel(control_command_validator, control_gate_controller, "Команда ворот")
@@ -158,10 +158,10 @@ Rel(control_camera_controller, control_command_publisher, "Подготовле�
 Rel(control_command_publisher, message_broker, "Публикация команды", "MQTT")
 
 ' Rule Engine внутренние связи
-Rel(rule_grpc_api, rule_repository, "CRUD правил")
+Rel(rule_jRPC_api, rule_repository, "CRUD правил")
 Rel(rule_schedule_manager, rule_condition_evaluator, "Проверка по расписанию")
 Rel(rule_condition_evaluator, rule_executor, "Правило сработало")
-Rel(rule_executor, control_grpc_api, "Выполнение действий", "gRPC")
+Rel(rule_executor, control_jRPC_api, "Выполнение действий", "jRPC")
 Rel(rule_user_request_service, rule_executor, "Запуск сценария")
 Rel(rule_repository, postgres_db, "SQL запросы", "TCP/SQL")
 

@@ -8,7 +8,7 @@ ContainerDb(postgres, "PostgreSQL", "", "Хранение правил")
 Container(control_service, "Control Service", "Kotlin", "Выполнение команд")
 
 Container_Boundary(rule_service_boundary, "Rule Engine") {
-    Component(rule_grpc_api, "Rule gRPC API", "Kotlin", "Обработка gRPC запросов управления правилами")
+    Component(rule_jRPC_api, "Rule jRPC API", "Kotlin", "Обработка jRPC запросов управления правилами")
     Component(rule_user_request_service, "User Request Service", "Kotlin", "Ручной запуск сценариев")
     Component(rule_executor, "Rule Executor", "Kotlin", "Выполнение правил")
     Component(rule_condition_evaluator, "Condition Evaluator", "Kotlin", "Оценка условий срабатывания")
@@ -16,14 +16,14 @@ Container_Boundary(rule_service_boundary, "Rule Engine") {
     Component(rule_repository, "Rule Repository", "Kotlin", "Доступ к правилам")
 }
 
-Rel(rule_grpc_api, rule_repository, "CRUD правил")
+Rel(rule_jRPC_api, rule_repository, "CRUD правил")
 Rel(rule_schedule_manager, rule_condition_evaluator, "Проверка по расписанию")
 Rel(rule_condition_evaluator, rule_executor, "Правило сработало")
-Rel(rule_executor, control_service, "Выполнение действий", "gRPC")
+Rel(rule_executor, control_service, "Выполнение действий", "jRPC")
 Rel(rule_user_request_service, rule_executor, "Запуск сценария")
 Rel(rule_repository, postgres, "SQL запросы", "TCP/SQL")
 
-Rel(api_gateway, rule_user_request_service, "Запрос на выполнения сценария", "gRPC")
-Rel(api_gateway, rule_grpc_api, "Управление правилами", "gRPC")
+Rel(api_gateway, rule_user_request_service, "Запрос на выполнения сценария", "jRPC")
+Rel(api_gateway, rule_jRPC_api, "Управление правилами", "jRPC")
 
 @enduml
